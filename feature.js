@@ -1,29 +1,40 @@
-// calculate Time 
+// calculate Time
 function getTime(seconds) {
-    const years = Math.floor(seconds / (365 * 24 * 60 * 60));
-    seconds %= (365 * 24 * 60 * 60);
+  const years = Math.floor(seconds / (365 * 24 * 60 * 60));
+  seconds %= 365 * 24 * 60 * 60;
 
-    const months = Math.floor(seconds / (30 * 24 * 60 * 60));
-    seconds %= (30 * 24 * 60 * 60);
+  const months = Math.floor(seconds / (30 * 24 * 60 * 60));
+  seconds %= 30 * 24 * 60 * 60;
 
-    const days = Math.floor(seconds / (24 * 60 * 60));
-    seconds %= (24 * 60 * 60);
+  const days = Math.floor(seconds / (24 * 60 * 60));
+  seconds %= 24 * 60 * 60;
 
-    const hours = Math.floor(seconds / (60 * 60));
-    seconds %= (60 * 60);
+  const hours = Math.floor(seconds / (60 * 60));
+  seconds %= 60 * 60;
 
-    const minutes = Math.floor(seconds / 60);
-    seconds %= 60;
+  const minutes = Math.floor(seconds / 60);
+  seconds %= 60;
 
-    let result = '';
-    if (years) result += `${years}y `;
-    if (months) result += `${months}m `;
-    if (days) result += `${days}d `;
-    if (hours) result += `${hours}h `;
-    if (minutes) result += `${minutes}m `;
-    if (seconds || result === '') result += `${seconds}s`;
+  let result = "";
+  if (years) result += `${years}y `;
+  if (months) result += `${months}m `;
+  if (days) result += `${days}d `;
+  if (hours) result += `${hours}h `;
+  if (minutes) result += `${minutes}m `;
+  if (seconds || result === "") result += `${seconds}s`;
 
-    return result.trim();
+  return result.trim();
+}
+// set button
+
+function setButton(id) {
+  document.getElementById(id).classList.add("bg-red-500", "text-white");
+}
+function unsetButton() {
+  const buttons = document.getElementsByClassName("category-btn");
+  for (let button of buttons) {
+    button.classList.remove("bg-red-500", "text-white");
+  }
 }
 // load category
 const getCategory = () => {
@@ -39,13 +50,36 @@ const getVideos = () => {
     .then((data) => displayVideos(data.videos))
     .catch((err) => console.log(err));
 };
+// load category video
+const loadCategoryVideo = (id) => {
+  fetch(`https://openapi.programming-hero.com/api/phero-tube/category/${id}`)
+    .then((res) => res.json())
+    .then((data) => {
+      unsetButton();
+      setButton(`btn-${id}`);
+
+      displayVideos(data.category);
+    })
+    .catch((err) => console.log(err));
+};
+// all video
+function getAllVideos() {
+    unsetButton();
+    setButton("all-btn");
+    getVideos();
+
+}
 // display category
 const displayCategory = (categories) => {
-  const categoriesContainer = document.getElementById("categoriesContainer");
+    const categoriesContainer = document.getElementById("categoriesContainer");
+    const buttonContainer = document.createElement("div");
+    buttonContainer.innerHTML = `<button  id="all-btn" onclick="getAllVideos()" class="btn text-xl category-btn bg-red-500 text-white">All</button>
+    `;
+    categoriesContainer.appendChild(buttonContainer);
   categories.forEach((element) => {
     const buttonContainer = document.createElement("div");
     buttonContainer.innerHTML = `
-        <button class="btn text-xl">${element.category}</button>
+        <button id="btn-${element.category_id}" onclick="loadCategoryVideo(${element.category_id})" class="btn text-xl category-btn">${element.category}</button>
         `;
     categoriesContainer.appendChild(buttonContainer);
   });
@@ -53,18 +87,21 @@ const displayCategory = (categories) => {
 
 const displayVideos = (videos) => {
   const videoContainer = document.getElementById("videoContainer");
+  videoContainer.innerHTML = "";
   videos.forEach((item) => {
     const card = document.createElement("div");
     card.innerHTML = `<figure class="relative h-[190px]">
             <img
               src=${item.thumbnail}
               alt=""
-              class="rounded-xl w-full object-cover"
+              class="rounded-xl w-full h-full object-cover"
             />
             ${
               item.others.posted_date?.length == 0
                 ? ""
-                : `<p class="bg-black text-gray-300 absolute right-2 bottom-2 px-2 rounded-lg">${getTime(item.others.posted_date)}</p>`
+                : `<p class="bg-black text-gray-300 absolute right-2 bottom-2 px-2 rounded-lg">${getTime(
+                    item.others.posted_date
+                  )}</p>`
             }
             
           </figure>
