@@ -47,9 +47,19 @@ const getCategory = () => {
 const getVideos = (search='') => {
   fetch(`https://openapi.programming-hero.com/api/phero-tube/videos?title=${search}`)
     .then((res) => res.json())
-    .then((data) => displayVideos(data.videos))
+    .then((data) => {
+      allVideos = data.videos;
+      displayVideos(data.videos);
+    })
     .catch((err) => console.log(err));
 };
+// sort function
+const sortVideos = (videos) => {
+  
+  return videos.sort((a, b) => parseFloat(b.others.views) - parseFloat(a.others.views));
+}
+let allVideos = [];
+
 // load category video
 const loadCategoryVideo = (id) => {
   fetch(`https://openapi.programming-hero.com/api/phero-tube/category/${id}`)
@@ -57,7 +67,7 @@ const loadCategoryVideo = (id) => {
     .then((data) => {
       unsetButton();
       setButton(`btn-${id}`);
-
+      allVideos = data.category;
       displayVideos(data.category);
     })
     .catch((err) => console.log(err));
@@ -136,6 +146,9 @@ const displayVideos = (videos) => {
 };
 document.getElementById("search").addEventListener("keyup", (e) => {
   getVideos(e.target.value);
+})
+document.getElementById("sort-btn").addEventListener("click", (e) => {
+  displayVideos(sortVideos(allVideos));
 })
 getCategory();
 getVideos();
