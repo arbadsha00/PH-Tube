@@ -98,6 +98,18 @@ const displayCategory = (categories) => {
 const displayVideos = (videos) => {
   const videoContainer = document.getElementById("videoContainer");
   videoContainer.innerHTML = "";
+  if (videos.length == 0) {
+    videoContainer.classList.remove("grid");
+    videoContainer.innerHTML = `
+    <div class="min-h-[300px] flex flex-col gap-5 justify-center items-center">
+    
+      <img src="images/Icon.png" /> 
+      <h2 class="text-center text-xl font-bold"> No Content Here in this Categery </h2> 
+    </div>`;
+  } else {
+    videoContainer.classList.add("grid");
+  }
+
   videos.forEach((item) => {
     const card = document.createElement("div");
     card.innerHTML = `<figure class="relative h-[190px]">
