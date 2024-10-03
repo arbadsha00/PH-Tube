@@ -44,8 +44,8 @@ const getCategory = () => {
     .catch((err) => console.log(err));
 };
 // load videos
-const getVideos = () => {
-  fetch("https://openapi.programming-hero.com/api/phero-tube/videos")
+const getVideos = (search='') => {
+  fetch(`https://openapi.programming-hero.com/api/phero-tube/videos?title=${search}`)
     .then((res) => res.json())
     .then((data) => displayVideos(data.videos))
     .catch((err) => console.log(err));
@@ -73,13 +73,13 @@ function getAllVideos() {
 const displayCategory = (categories) => {
     const categoriesContainer = document.getElementById("categoriesContainer");
     const buttonContainer = document.createElement("div");
-    buttonContainer.innerHTML = `<button  id="all-btn" onclick="getAllVideos()" class="btn text-xl category-btn bg-red-500 text-white">All</button>
+    buttonContainer.innerHTML = `<button  id="all-btn" onclick="getAllVideos()" class="btn  category-btn bg-red-500 text-white">All</button>
     `;
     categoriesContainer.appendChild(buttonContainer);
   categories.forEach((element) => {
     const buttonContainer = document.createElement("div");
     buttonContainer.innerHTML = `
-        <button id="btn-${element.category_id}" onclick="loadCategoryVideo(${element.category_id})" class="btn text-xl category-btn">${element.category}</button>
+        <button id="btn-${element.category_id}" onclick="loadCategoryVideo(${element.category_id})" class="btn  category-btn">${element.category}</button>
         `;
     categoriesContainer.appendChild(buttonContainer);
   });
@@ -134,6 +134,8 @@ const displayVideos = (videos) => {
     videoContainer.appendChild(card);
   });
 };
-
+document.getElementById("search").addEventListener("keyup", (e) => {
+  getVideos(e.target.value);
+})
 getCategory();
 getVideos();
